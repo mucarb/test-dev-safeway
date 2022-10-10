@@ -1,3 +1,4 @@
+package entities;
 
 public class Cliente {
 	private String cpf;
@@ -16,15 +17,6 @@ public class Cliente {
 	public String getCpf() {
 		return cpf;
 	}
-	
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
 
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
@@ -36,6 +28,14 @@ public class Cliente {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public Integer getIdade() {

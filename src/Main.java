@@ -1,8 +1,15 @@
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import entities.Cliente;
+import entities.Empresa;
+import entities.Produto;
+import entities.Usuario;
+import entities.Venda;
 
 public class Main {
 
@@ -28,6 +35,10 @@ public class Main {
 		Produto produto9 = new Produto(9, "Croissant", 7, 6.50, empresa);
 		Produto produto10 = new Produto(10, "Ché Gelado", 4, 5.50, empresa);
 
+		empresa.getProdutos().addAll(Arrays.asList(produto, produto8, produto9, produto10));
+		empresa2.getProdutos().addAll(Arrays.asList(produto2, produto3, produto4));
+		empresa3.getProdutos().addAll(Arrays.asList(produto, produto6, produto7));
+
 		Cliente cliente = new Cliente("07221134049", "Allan da Silva", "cliente", 20);
 		Cliente cliente2 = new Cliente("72840700050", "Samuel da Silva", "cliente2", 24);
 
@@ -37,7 +48,6 @@ public class Main {
 		Usuario usuario4 = new Usuario("cliente2", "1234", cliente2, null);
 		Usuario usuario5 = new Usuario("empresa2", "1234", null, empresa2);
 		Usuario usuario6 = new Usuario("empresa3", "1234", null, empresa3);
-
 
 		List<Usuario> usuarios = Arrays.asList(usuario1, usuario2, usuario3, usuario4, usuario5, usuario6);
 		List<Cliente> clientes = Arrays.asList(cliente, cliente2);
@@ -56,7 +66,6 @@ public class Main {
 		String username = sc.next();
 		System.out.print("Senha: ");
 		String senha = sc.next();
-		
 
 		List<Usuario> usuariosSearch = usuarios.stream().filter(x -> x.getUsername().equals(username))
 				.collect(Collectors.toList());
@@ -74,56 +83,22 @@ public class Main {
 					switch (escolha) {
 					case 1: {
 						System.out.println();
+						exibirVendasEfetuadas(vendas, usuarioLogado);
 						System.out.println("************************************************************");
-						System.out.println("VENDAS EFETUADAS");
-						vendas.stream().forEach(venda -> {
-							if (venda.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
-								System.out.println("************************************************************");
-								System.out.println("Venda de código: " + venda.getCódigo() + " no CPF "
-										+ venda.getCliente().getCpf() + ": ");
-								venda.getItens().stream().forEach(x -> {
-									System.out.println(x.getId() + " - " + x.getNome() + "    R$" + x.getPreco());
-								});
-								System.out.println("Total Venda: R$" + venda.getValor());
-								System.out.println("Total Taxa a ser paga: R$" + venda.getComissaoSistema());
-								System.out.println("Total Líquido  para empresa"
-										+ (venda.getValor() - venda.getComissaoSistema()));
-								System.out.println("************************************************************");
-							}
-
-						});
-						System.out.println("Saldo Empresa: " + usuarioLogado.getEmpresa().getSaldo());
-						System.out.println("************************************************************");
-
 						executar(usuarios, clientes, empresas, produtos, carrinho, vendas);
 					}
 					case 2: {
 						System.out.println();
-						System.out.println("************************************************************");
-						System.out.println("MEUS PRODUTOS");
-						produtos.stream().forEach(produto -> {
-							if (produto.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
-								System.out.println("************************************************************");
-								System.out.println("Código: " + produto.getId());
-								System.out.println("Produto: " + produto.getNome());
-								System.out.println("Quantidade em estoque: " + produto.getQuantidade());
-								System.out.println("Valor: R$" + produto.getPreco());								
-								System.out.println("************************************************************");
-							}
-
-						});
+						exibirMeusProdutos(produtos, usuarioLogado);
 						System.out.println("Saldo Empresa: " + usuarioLogado.getEmpresa().getSaldo());
 						System.out.println("************************************************************");
-
 						executar(usuarios, clientes, empresas, produtos, carrinho, vendas);
 					}
 					case 0: {
 						executar(usuarios, clientes, empresas, produtos, carrinho, vendas);
-
 					}
 					}
-
-				} else {
+				} else if (usuarioLogado.IsCliente()) {
 					System.out.println("1 - Relizar Compras");
 					System.out.println("2 - Ver Compras");
 					System.out.println("0 - Deslogar");
@@ -138,54 +113,20 @@ public class Main {
 						Integer escolhaProduto = -1;
 						do {
 							System.out.println("Escolha os seus produtos: ");
-							produtos.stream().forEach(x -> {
-								if (x.getEmpresa().getId().equals(escolhaEmpresa)) {
-									System.out.println(x.getId() + " - " + x.getNome());
-								}
-							});
+							listarProdutoEmpresa(empresas, escolhaEmpresa);
 							System.out.println("0 - Finalizar compra");
 							escolhaProduto = sc.nextInt();
-							for (Produto produtoSearch : produtos) {
-								if (produtoSearch.getId().equals(escolhaProduto))
-									carrinho.add(produtoSearch);
-							}
+							addProdutoCarrinho(produtos, escolhaProduto, carrinho);
 						} while (escolhaProduto != 0);
-						System.out.println("************************************************************");
-						System.out.println("Resumo da compra: ");
-						carrinho.stream().forEach(x -> {
-							if (x.getEmpresa().getId().equals(escolhaEmpresa)) {
-								System.out.println(x.getId() + " - " + x.getNome() + "    R$" + x.getPreco());
-							}
-						});
-						Empresa empresaEscolhida = empresas.stream().filter(x -> x.getId().equals(escolhaEmpresa))
-								.collect(Collectors.toList()).get(0);
-						Cliente clienteLogado = clientes.stream()
-								.filter(x -> x.getUsername().equals(usuarioLogado.getUsername()))
-								.collect(Collectors.toList()).get(0);
-						Venda venda = criarVenda(carrinho, empresaEscolhida, clienteLogado, vendas);
-						System.out.println("Total: R$" + venda.getValor());
+						mostrarResumoDeCompra(clientes, carrinho, empresas, vendas, escolhaEmpresa, usuarioLogado);
+
 						System.out.println("************************************************************");
 						carrinho.clear();
 						executar(usuarios, clientes, empresas, produtos, carrinho, vendas);
 					}
 					case 2: {
 						System.out.println();
-						System.out.println("************************************************************");
-						System.out.println("COMPRAS EFETUADAS");
-						vendas.stream().forEach(venda -> {
-							if (venda.getCliente().getUsername().equals(usuarioLogado.getUsername())) {
-								System.out.println("************************************************************");
-								System.out.println("Compra de código: " + venda.getCódigo() + " na empresa "
-										+ venda.getEmpresa().getNome() + ": ");
-								venda.getItens().stream().forEach(x -> {
-									System.out.println(x.getId() + " - " + x.getNome() + "    R$" + x.getPreco());
-								});
-								System.out.println("Total: R$" + venda.getValor());
-								System.out.println("************************************************************");
-							}
-
-						});
-
+						exibirComprasEfetuadas(vendas, usuarioLogado);
 						executar(usuarios, clientes, empresas, produtos, carrinho, vendas);
 					}
 					case 0: {
@@ -201,13 +142,103 @@ public class Main {
 		} else {
 			System.out.println("Usuário não encontrado");
 		}
+		sc.close();
+	}
+
+	private static void exibirVendasEfetuadas(List<Venda> vendas, Usuario usuarioLogado) {
+		System.out.println("************************************************************");
+		System.out.println("VENDAS EFETUADAS");
+		vendas.stream().forEach(venda -> {
+			if (venda.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
+				System.out.println("************************************************************");
+				System.out.println(
+						"Venda de código: " + venda.getCódigo() + " no CPF " + venda.getCliente().getCpf() + ": ");
+				venda.getItens().stream().forEach(x -> {
+					System.out.println(x.getId() + " - " + x.getNome() + " R$" + String.format("%.2f", x.getPreco()));
+				});
+				System.out.println("Total Venda: R$" + String.format("%.2f", venda.getValor()));
+				System.out.println("Total Taxa a ser paga: R$" + String.format("%.2f", venda.getComissaoSistema()));
+				System.out.println("Total Líquido para empresa: R$"
+						+ String.format("%.2f", (venda.getValor() - venda.getComissaoSistema())));
+				System.out.println("************************************************************");
+			}
+		});
+		System.out.println("Saldo Empresa: " + String.format("%.2f", usuarioLogado.getEmpresa().getSaldo()));
+	}
+
+	private static void exibirMeusProdutos(List<Produto> produtos, Usuario usuarioLogado) {
+		System.out.println("************************************************************");
+		System.out.println("MEUS PRODUTOS");
+		produtos.stream().forEach(produto -> {
+			if (produto.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
+				System.out.println("************************************************************");
+				System.out.println("Código: " + produto.getId());
+				System.out.println("Produto: " + produto.getNome());
+				System.out.println("Quantidade em estoque: " + produto.getQuantidade());
+				System.out.println("Valor: R$" + String.format("%.2f", produto.getPreco()));
+				System.out.println("************************************************************");
+			}
+		});
+	}
+
+	private static void addProdutoCarrinho(List<Produto> produtos, Integer escolhaProduto, List<Produto> carrinho) {
+		for (Produto produtoSearch : produtos) {
+			if (produtoSearch.getId().equals(escolhaProduto)) {
+				carrinho.add(produtoSearch);
+			}
+		}
+	}
+
+	private static void listarProdutoEmpresa(List<Empresa> empresas, Integer escolhaEmpresa) {
+		empresas.stream().forEach(x -> {
+			if (x.getId().equals(escolhaEmpresa)) {
+				x.getProdutos().forEach(System.out::println);
+			}
+		});
+	}
+
+	private static void exibirComprasEfetuadas(List<Venda> vendas, Usuario usuarioLogado) {
+		System.out.println("************************************************************");
+		System.out.println("COMPRAS EFETUADAS");
+		vendas.stream().forEach(venda -> {
+			if (venda.getCliente().getUsername().equals(usuarioLogado.getUsername())) {
+				System.out.println("************************************************************");
+				System.out.println("Compra de código: " + venda.getCódigo() + " na empresa "
+						+ venda.getEmpresa().getNome() + ": ");
+				venda.getItens().stream().forEach(x -> {
+					System.out.println(x.getId() + " - " + x.getNome() + " R$" + String.format("%.2f", x.getPreco()));
+				});
+				System.out.println("Total: R$" + String.format("%.2f", venda.getValor()));
+				System.out.println("************************************************************");
+			}
+
+		});
+
+	}
+
+	private static void mostrarResumoDeCompra(List<Cliente> clientes, List<Produto> carrinho, List<Empresa> empresas,
+			List<Venda> vendas, Integer escolhaEmpresa, Usuario usuarioLogado) {
+		System.out.println("************************************************************");
+		System.out.println("Resumo da compra: ");
+		carrinho.stream().forEach(x -> {
+			if (x.getEmpresa().getId().equals(escolhaEmpresa)) {
+				System.out.println(x.getId() + " - " + x.getNome() + " R$" + String.format("%.2f", x.getPreco()));
+			}
+		});
+		Empresa empresaEscolhida = empresas.stream().filter(x -> x.getId().equals(escolhaEmpresa))
+				.collect(Collectors.toList()).get(0);
+		Cliente clienteLogado = clientes.stream().filter(x -> x.getUsername().equals(usuarioLogado.getUsername()))
+				.collect(Collectors.toList()).get(0);
+		Venda venda = criarVenda(carrinho, empresaEscolhida, clienteLogado, vendas);
+		System.out.println("Total: R$" + String.format("%.2f", venda.getValor()));
 	}
 
 	public static Venda criarVenda(List<Produto> carrinho, Empresa empresa, Cliente cliente, List<Venda> vendas) {
 		Double total = carrinho.stream().mapToDouble(Produto::getPreco).sum();
 		Double comissaoSistema = total * empresa.getTaxa();
 		int idVenda = vendas.isEmpty() ? 1 : vendas.get(vendas.size() - 1).getCódigo() + 1;
-		Venda venda = new Venda(idVenda, carrinho.stream().toList(), total, comissaoSistema, empresa, cliente);
+		Venda venda = new Venda(idVenda, carrinho.stream().collect(Collectors.toList()), total, comissaoSistema,
+				empresa, cliente);
 		empresa.setSaldo(empresa.getSaldo() + total);
 		vendas.add(venda);
 		return venda;

@@ -1,3 +1,5 @@
+package entities;
+
 import java.util.List;
 
 public class Venda {
@@ -8,7 +10,8 @@ public class Venda {
 	private Empresa empresa;
 	private Cliente cliente;
 
-	public Venda(Integer código, List<Produto> itens, Double valor, Double comissaoSistema, Empresa empresa, Cliente cliente) {
+	public Venda(Integer código, List<Produto> itens, Double valor, Double comissaoSistema, Empresa empresa,
+			Cliente cliente) {
 		super();
 		this.código = código;
 		this.itens = itens;
@@ -24,24 +27,6 @@ public class Venda {
 
 	public Integer getCódigo() {
 		return código;
-	}
-	
-	
-
-	public Empresa getEmpresa() {
-		return empresa;
-	}
-
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
-	}
-
-	public Cliente getCliente() {
-		return cliente;
-	}
-
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
 	}
 
 	public void setCódigo(Integer código) {
@@ -70,6 +55,22 @@ public class Venda {
 
 	public void setComissaoSistema(Double comissaoSistema) {
 		this.comissaoSistema = comissaoSistema;
+	}
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 
 }

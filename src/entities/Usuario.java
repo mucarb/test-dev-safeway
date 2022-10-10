@@ -1,3 +1,4 @@
+package entities;
 
 public class Usuario {
 	private String username;
@@ -59,6 +60,11 @@ public class Usuario {
 
 	public void setEmpresa(Empresa empresa) {
 		this.empresa = empresa;
+	}
+	
+	@Override
+	public String toString() {
+		return "Usuário: " + username;
 	}
 
 }

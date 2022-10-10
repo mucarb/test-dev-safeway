@@ -1,3 +1,4 @@
+package entities;
 
 public class Produto {
 	private Integer id;
@@ -6,7 +7,7 @@ public class Produto {
 	private Double preco;
 	private Empresa empresa;
 
-	public Produto(Integer id,String nome, Integer quantidade, Double preco, Empresa empresa) {
+	public Produto(Integer id, String nome, Integer quantidade, Double preco, Empresa empresa) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -17,10 +18,7 @@ public class Produto {
 
 	public Produto() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 	public Integer getId() {
 		return id;
@@ -28,14 +26,6 @@ public class Produto {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Empresa getEmpresa() {
-		return empresa;
-	}
-
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
 	}
 
 	public String getNome() {
@@ -60,6 +50,19 @@ public class Produto {
 
 	public void setPreco(Double preco) {
 		this.preco = preco;
+	}
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+	@Override
+	public String toString() {
+		return id + " - " + nome;
 	}
 
 }
